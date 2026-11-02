@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyName>MinecraftHotbar</AssemblyName>
+    <RootNamespace>MinecraftHotbar</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>Minecraft Desktop Hotbar</Product>
+    <Authors>Juan Pablo Bustos</Authors>
+    <Description>Barra de acceso rapido y dock flotante inspirado en la Hotbar de Minecraft para Windows.</Description>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <SatelliteResourceLanguages>es</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="icon.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,16 @@
+# Archivos de compilación de .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs y WebView2 runtime cache
+*.log
+hotbar.log
+**/WebView2/
+EBWebView/
+
+# Releases empaquetados
+*.zip

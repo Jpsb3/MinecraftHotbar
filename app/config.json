@@ -1,0 +1,170 @@
+{
+  "hotbarScale": 2.5,
+  "opacityIdle": 0.35,
+  "opacityActive": 1,
+  "soundVolume": 0.7,
+  "autoHide": false,
+  "position": "bottom-center",
+  "offsetY": 35,
+  "slots": [
+    {
+      "slot": 1,
+      "name": "Juegos / Steam",
+      "lore": "Abrir biblioteca de juegos",
+      "icon": "netherite_sword.png",
+      "target": "steam:",
+      "color": "#55ffff"
+    },
+    {
+      "slot": 2,
+      "name": "Spotify",
+      "lore": "Reproducir m\u00FAsica y podcasts",
+      "icon": "music_disc.png",
+      "target": "spotify:",
+      "color": "#55ff55"
+    },
+    {
+      "slot": 3,
+      "name": "Visual Studio Code",
+      "lore": "Editor de c\u00F3digo y proyectos",
+      "icon": "ender_pearl.png",
+      "target": "code",
+      "color": "#ff55ff"
+    },
+    {
+      "slot": 4,
+      "name": "Navegador Web",
+      "lore": "Buscar en internet",
+      "icon": "compass.png",
+      "target": "https://www.google.com",
+      "color": "#ffff55"
+    },
+    {
+      "slot": 5,
+      "name": "Descargas",
+      "lore": "Abrir carpeta Descargas",
+      "icon": "chest.png",
+      "target": "shell:Downloads",
+      "color": "#ffaa00"
+    },
+    {
+      "slot": 6,
+      "name": "Discord",
+      "lore": "Chat con amigos y comunidades",
+      "icon": "potion.png",
+      "target": "discord:",
+      "color": "#55aaff"
+    },
+    {
+      "slot": 7,
+      "name": "Terminal PowerShell",
+      "lore": "Consola de comandos",
+      "icon": "diamond.png",
+      "target": "powershell.exe",
+      "color": "#00ffff"
+    },
+    {
+      "slot": 8,
+      "name": "Mis Documentos",
+      "lore": "Carpeta personal y proyectos",
+      "icon": "golden_apple.png",
+      "target": "shell:Personal",
+      "color": "#ffff55"
+    },
+    {
+      "slot": 9,
+      "name": "Inventario \u0026 Ajustes",
+      "lore": "Personalizar casillas (Tecla E)",
+      "icon": "crafting_table.png",
+      "target": "inventory",
+      "color": "#ff5555"
+    }
+  ],
+  "inventorySlots": [
+    {
+      "name": "Reloj",
+      "icon": "clock.png",
+      "target": "calc.exe",
+      "lore": "Calculadora de Windows"
+    },
+    {
+      "name": "Ender Pearl",
+      "icon": "ender_pearl.png",
+      "target": "",
+      "lore": "Haz clic derecho para configurar"
+    },
+    {
+      "name": "Disco de M\u00FAsica",
+      "icon": "music_disc.png",
+      "target": "",
+      "lore": "Haz clic derecho para configurar"
+    },
+    {
+      "name": "Cofre",
+      "icon": "chest.png",
+      "target": "",
+      "lore": "Haz clic derecho para configurar"
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "stats": {
+    "opened": 0,
+    "clicks": {},
+    "unlocked": {},
+    "total": 0
+  },
+  "armorSlots": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "shieldSlot": [
+    null
+  ],
+  "craftSlots": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "craftResult": [
+    null
+  ],
+  "progress": {
+    "launches": {
+      "shell:Personal": 1,
+      "shell:Downloads": 1,
+      "powershell.exe": 1
+    },
+    "unlocked": {
+      "welcome": "2026-11-02T00:38:27.779Z",
+      "danger": "2026-11-02T00:38:27.882Z",
+      "inv": "2026-11-02T01:03:58.083Z",
+      "first": "2026-11-02T01:04:19.773Z"
+    },
+    "total": 3
+  }
+}

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Desktop Hotbar</title>
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('assets/font/Minecraft.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            font-family: 'Minecraft', monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 12px;
+        }
+
+        /* Contenedor principal de la Hotbar */
+        #hotbar-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Igual que en el juego: siempre a brillo completo y sin agrandarse */
+            transition: filter 0.22s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(1);
+        }
+
+        /* Al pasar el cursor o al interactuar se ilumina al 100% */
+        #hotbar-wrapper.active, #hotbar-wrapper:hover {
+            /* (antes se iluminaba y agrandaba; en el juego la barra no cambia) */
+        }
+
+        /* Tooltip Flotante Oficial de Minecraft */
+        #tooltip {
+            position: absolute;
+            bottom: 64px;
+            pointer-events: none;
+            background: #100010;
+            border: 2px solid #5000ff;
+            border-image: linear-gradient(to bottom, #5000ff, #28007f) 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.85);
+            padding: 5px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        #tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #tooltip-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #55ffff;
+            text-shadow: 1.5px 1.5px 0 #000;
+        }
+
+        #tooltip-lore {
+            font-size: 9.5px;
+            color: #aaaaaa;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* La barra de 9 casillas (182px * 2.5 = 455px, 22px * 2.5 = 55px) */
+        .hotbar-container {
+            position: relative;
+            width: 455px;
+            height: 55px;
+            background: url('assets/hotbar.png') no-repeat center;
+            background-size: 100% 100%;
+            image-rendering: pixelated;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            align-items: center;
+            padding: 0 2.5px;
+        }
+
+        /* Selector blanco oficial que resalta la casilla actual */
+        #selection-box {
+            position: absolute;
+            top: -2.5px;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            background: url('assets/hotbar_selection.png') no-repeat center;
+            background-size: 100% 100%;
+            image-rendering: pixelated;
+            pointer-events: none;
+            transition: left 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 10;
+        }
+
+        /* Cada ranura individual */
+        .slot {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .slot-icon {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            transition: transform 0.12s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+        }
+
+        .slot:hover .slot-icon, .slot.selected .slot-icon {
+            transform: scale(1.12);
+        }
+
+        .slot-number {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            font-size: 8.5px;
+            color: #ffffff;
+            text-shadow: 1px 1px 0 #000;
+            pointer-events: none;
+            opacity: 0.6;
+            display: none;          /* en el juego no hay números; "showSlotNumbers": true los muestra */
+        }
+        body.show-numbers .slot-number { display: block; }
+
+        /* ========================================================
+           VENTANA MODAL DEL INVENTARIO (TECLA 'E' O AJUSTES)
+           ======================================================== */
+        #inventory-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.94);
+            width: 480px;
+            background: rgba(18, 18, 22, 0.96);
+            border: 3px solid #000000;
+            box-shadow: inset 2px 2px 0 #6c6d7d, inset -2px -2px 0 #1c1c24, 0 20px 60px rgba(0, 0, 0, 0.95);
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 500;
+            color: #ffffff;
+            image-rendering: pixelated;
+        }
+
+        #inventory-modal.open {
+            display: flex;
+            transform: translate(-50%, -50%) scale(1);
+            animation: modalPop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #2d2e38;
+            padding-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            color: #ffff55;
+            text-shadow: 1.5px 1.5px 0 #3f3f00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: #4c4c4c;
+            border: 2px solid #000;
+            box-shadow: inset 1px 1px 0 #858585, inset -1px -1px 0 #222;
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: 'Minecraft', monospace;
+            font-size: 11px;
+        }
+
+        .modal-close:hover {
+            border-color: #ffffff;
+            color: #ffffa0;
+        }
+
+        /* Selector de casilla a editar */
+        .edit-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .edit-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mc-input {
+            flex: 1;
+            height: 28px;
+            background: #141418;
+            border: 2px solid #000;
+            box-shadow: inset 1px 1px 0 #282933;
+            color: #fff;
+            font-family: 'Minecraft', monospace;
+            font-size: 11px;
+            padding: 0 8px;
+            outline: none;
+        }
+
+        .mc-input:focus {
+            border-color: #55ff55;
+        }
+
+        /* Cuadrícula de iconos para elegir */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+            max-height: 140px;
+            overflow-y: auto;
+            background: #121318;
+            border: 2px solid #000;
+            padding: 8px;
+        }
+
+        .grid-item {
+            width: 36px;
+            height: 36px;
+            background: #2a2a34;
+            border: 1px solid #000;
+            box-shadow: inset 1px 1px 0 #4a4b58;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .grid-item:hover, .grid-item.active {
+            border-color: #55ff55;
+            background: #1a2a1a;
+            box-shadow: inset 1px 1px 0 #55ff55;
+        }
+
+        .grid-item img {
+            width: 26px;
+            height: 26px;
+            image-rendering: pixelated;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            border-top: 2px solid #2d2e38;
+            padding-top: 8px;
+        }
+
+        .mc-btn {
+            height: 28px;
+            background: #4c4c4c;
+            border: 2px solid #000;
+            box-shadow: inset 2px 2px 0 #858585, inset -2px -2px 0 #222;
+            color: #e0e0e0;
+            font-family: 'Minecraft', monospace;
+            font-size: 11px;
+            padding: 0 14px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .mc-btn:hover {
+            border-color: #fff;
+            color: #ffffa0;
+        }
+
+        /* ========================================================
+           HUD: corazones = RAM, comida = batería (o disco), XP = día, nivel = CPU
+           Sprites dibujados a mano (assets/hud), escala 2.5 como la hotbar
+           ======================================================== */
+        #hud { width: 455px; display: flex; flex-direction: column; gap: 2.5px; margin-bottom: 5px; }
+        #hud.hidden { display: none; }
+        #hud-top { position: relative; height: 22.5px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .hud-row { display: flex; }
+        #food { flex-direction: row-reverse; }               /* la comida se vacía de derecha a izquierda, como en el juego */
+        .hud-icon { width: 22.5px; height: 22.5px; image-rendering: pixelated; margin-right: -2.5px; }
+        #food .hud-icon { margin-right: 0; margin-left: -2.5px; }
+        .hud-row.flash .hud-icon { filter: brightness(2.4) saturate(0.2); }
+        #xp-level { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); z-index: 2; }
+        #xp { position: relative; width: 455px; height: 12.5px; background: #24301f; border: 2.5px solid #000; }
+        #xp-fill { height: 100%; width: 0%; background: linear-gradient(#c4ff7a, #74d42c 55%, #4b9a1b); transition: width 1s linear; }
+        #xp::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: repeating-linear-gradient(90deg, transparent 0 22.5px, rgba(0,0,0,0.6) 22.5px 25px);
+        }
+        #hotbar-wrapper.has-hud #tooltip { bottom: 106px; }
+
+        .mc-btn.btn-save {
+            background: #25421b;
+            border-color: #55ff55;
+            color: #55ff55;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor de la Hotbar -->
+    <div id="hotbar-wrapper">
+        <!-- Tooltip Oficial -->
+        <div id="tooltip">
+            <span id="tooltip-title">Netherite Sword</span>
+            <span id="tooltip-lore">Haz clic para iniciar partida</span>
+        </div>
+
+        <!-- HUD: vida (RAM), comida (batería/disco), experiencia (día) y nivel (CPU) -->
+        <div id="hud">
+            <div id="hud-top">
+                <div class="hud-row" id="hearts"></div>
+                <canvas id="xp-level"></canvas>
+                <div class="hud-row" id="food"></div>
+            </div>
+            <div id="xp"><div id="xp-fill"></div></div>
+        </div>
+
+        <!-- Hotbar 9 Casillas -->
+        <div class="hotbar-container" id="hotbar-slots">
+            <div id="selection-box"></div>
+            <!-- Los 9 slots se generan dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Modal del Inventario / Ajustes (Tecla E) -->
+    <div id="inventory-modal">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span>📦</span>
+                <span>INVENTARIO & CONFIGURACIÓN</span>
+            </div>
+            <button class="modal-close" id="btn-close-modal">✕</button>
+        </div>
+
+        <div class="edit-section">
+            <div style="font-size: 10px; color: #ffaa00;">Selecciona una casilla para editar su programa:</div>
+            <div class="edit-row">
+                <select id="edit-slot-select" class="mc-input" style="width: 130px;"></select>
+                <input type="text" id="edit-name-input" class="mc-input" placeholder="Nombre de la app">
+            </div>
+            <div class="edit-row">
+                <input type="text" id="edit-target-input" class="mc-input" placeholder="Ruta (.exe), URL o protocolo (ej: spotify:)">
+                <button type="button" class="mc-btn" id="btn-browse-target" style="padding: 0 8px; font-size: 10px; height: 28px;">Buscar...</button>
+            </div>
+            <div style="font-size: 10px; color: #55ff55; margin-top: 4px;">Elige el ícono de Minecraft:</div>
+            <div class="items-grid" id="items-grid"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="mc-btn" id="btn-cancel-modal">Cancelar</button>
+            <button class="mc-btn btn-save" id="btn-save-modal">Guardar Cambios</button>
+        </div>
+    </div>
+
+    <script>
+        // ========================================================
+        // REPRODUCTOR DE SONIDOS ORIGINALES MINECRAFT
+        // ========================================================
+        const audioFiles = {
+            click: 'assets/audio/click.ogg',
+            orb: 'assets/audio/orb.ogg',
+            toastIn: 'assets/audio/toast_in.ogg',
+            levelup: 'assets/audio/levelup.ogg',
+            anvil: 'assets/audio/anvil_use.ogg'
+        };
+
+        const AUDIO_CACHE = {};
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        for (const [key, path] of Object.entries(audioFiles)) {
+            fetch(path)
+                .then(res => res.arrayBuffer())
+                .then(buf => getAudioContext().decodeAudioData(buf))
+                .then(decoded => { AUDIO_CACHE[key] = decoded; })
+                .catch(() => { AUDIO_CACHE[key] = new Audio(path); });
+        }
+
+        function playSound(name) {
+            try {
+                const ctx = getAudioContext();
+                if (AUDIO_CACHE[name] instanceof AudioBuffer) {
+                    const src = ctx.createBufferSource();
+                    src.buffer = AUDIO_CACHE[name];
+                    src.connect(ctx.destination);
+                    src.start(0);
+                } else if (AUDIO_CACHE[name] instanceof Audio) {
+                    AUDIO_CACHE[name].currentTime = 0;
+                    AUDIO_CACHE[name].play();
+                }
+            } catch (e) { }
+        }
+
+        // ========================================================
+        // CONFIGURACIÓN Y ESTADO DE LA HOTBAR
+        // ========================================================
+        const AVAILABLE_ICONS = [
+            'diamond_sword.png', 'netherite_sword.png', 'music_disc.png', 'enchanted_book.png',
+            'compass.png', 'potion.png', 'diamond.png', 'golden_apple.png', 'bow.png',
+            'diamond_pickaxe.png', 'netherite_axe.png', 'totem.png', 'emerald.png', 'clock.png',
+            'ender_pearl.png', 'firework.png', 'water_bucket.png', 'crafting_table.png', 'chest.png'
+        ];
+
+        let config = {
+            hotbarScale: 2.5,
+            slots: [
+                { slot: 1, name: "Valorant / Juegos", lore: "Haz clic para jugar", icon: "netherite_sword.png", target: "C:\\Riot Games\\VALORANT\\live\\VALORANT.exe", color: "#55ffff" },
+                { slot: 2, name: "Spotify", lore: "Música y podcasts", icon: "music_disc.png", target: "spotify:", color: "#55ff55" },
+                { slot: 3, name: "VS Code", lore: "Editor de código", icon: "enchanted_book.png", target: "code", color: "#ff55ff" },
+                { slot: 4, name: "Navegador Web", lore: "Buscar en internet", icon: "compass.png", target: "https://www.google.com", color: "#ffff55" },
+                { slot: 5, name: "Descargas", lore: "Abrir carpeta de archivos", icon: "chest.png", target: "shell:Downloads", color: "#ffaa00" },
+                { slot: 6, name: "Discord", lore: "Comunidades y chat", icon: "potion.png", target: "discord:", color: "#55aaff" },
+                { slot: 7, name: "Terminal PowerShell", lore: "Línea de comandos", icon: "diamond.png", target: "powershell.exe", color: "#00ffff" },
+                { slot: 8, name: "SafeLean / Trabajo", lore: "Proyectos y operaciones", icon: "golden_apple.png", target: "C:\\Users\\USUARIO\\Desktop\\02 PROGRAMACION", color: "#ffff55" },
+                { slot: 9, name: "Inventario (Tecla E)", lore: "Personalizar casillas", icon: "crafting_table.png", target: "inventory", color: "#ff5555" }
+            ]
+        };
+
+        let currentSelectedIndex = 0; // 0 a 8
+        const hotbarWrapper = document.getElementById('hotbar-wrapper');
+        const hotbarSlots = document.getElementById('hotbar-slots');
+        const selectionBox = document.getElementById('selection-box');
+        const tooltip = document.getElementById('tooltip');
+        const tooltipTitle = document.getElementById('tooltip-title');
+        const tooltipLore = document.getElementById('tooltip-lore');
+        const inventoryModal = document.getElementById('inventory-modal');
+
+        let tooltipTimer = null;
+
+        // Renderizar slots
+        function renderHotbar() {
+            applyHudVisibility();
+            hotbarSlots.querySelectorAll('.slot').forEach(s => s.remove());
+
+            config.slots.forEach((s, idx) => {
+                const slotEl = document.createElement('div');
+                slotEl.className = 'slot' + (idx === currentSelectedIndex ? ' selected' : '');
+                slotEl.dataset.index = idx;
+
+                slotEl.innerHTML = `
+                    <img src="assets/items/${s.icon}" class="slot-icon" alt="${s.name}">
+                    <span class="slot-number">${idx + 1}</span>
+                `;
+
+                slotEl.addEventListener('mouseenter', () => {
+                    selectSlot(idx, false);
+                });
+
+                slotEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    activateSlot(idx);
+                });
+
+                hotbarSlots.appendChild(slotEl);
+            });
+
+            updateSelectionBox(false);
+        }
+
+        // Mover caja de selección (cada slot mide 50px de ancho)
+        function updateSelectionBox(animateSound = true) {
+            // Cada slot mide 50px, offset inicial para centrar la caja de 60px sobre el slot de 50px: (50 - 60)/2 = -5px
+            const slotWidth = 50;
+            const targetLeft = (currentSelectedIndex * slotWidth) - 4.5;
+            selectionBox.style.left = `${targetLeft}px`;
+
+            document.querySelectorAll('.slot').forEach((el, idx) => {
+                if (idx === currentSelectedIndex) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
+            showTooltipForSlot(currentSelectedIndex);
+            if (animateSound) playSound('click');
+        }
+
+        function selectSlot(index, playSfx = true) {
+            if (index < 0) index = 8;
+            if (index > 8) index = 0;
+            currentSelectedIndex = index;
+            hotbarWrapper.classList.add('active');
+            updateSelectionBox(playSfx);
+        }
+
+        function showTooltipForSlot(index) {
+            clearTimeout(tooltipTimer);
+            const slotData = config.slots[index];
+            if (!slotData) return;
+
+            tooltipTitle.textContent = slotData.name;
+            tooltipTitle.style.color = slotData.color || '#55ffff';
+            tooltipLore.textContent = slotData.lore || 'Haz clic para abrir';
+            tooltip.classList.add('show');
+
+            // Centrar tooltip sobre el slot
+            const slotWidth = 50;
+            const centerPos = (index * slotWidth) + (slotWidth / 2);
+            tooltip.style.left = `${centerPos}px`;
+            tooltip.style.transform = `translateX(-50%) translateY(0)`;
+
+            tooltipTimer = setTimeout(() => {
+                if (!hotbarWrapper.matches(':hover') && !inventoryModal.classList.contains('open')) {
+                    tooltip.classList.remove('show');
+                    hotbarWrapper.classList.remove('active');
+                }
+            }, 3000);
+        }
+
+        function activateSlot(index) {
+            selectSlot(index, false);
+            playSound('orb');
+            const slotData = config.slots[index];
+            if (!slotData) return;
+
+            if (slotData.target === 'inventory') {
+                toggleInventory(true);
+                return;
+            }
+
+            // Enviar acción al host de C#
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage({
+                    action: 'launch',
+                    slot: slotData.slot,
+                    target: slotData.target,
+                    name: slotData.name
+                });
+            } else {
+                console.log('Lanzando:', slotData.target);
+            }
+        }
+
+        // ========================================================
+        // NAVEGACIÓN POR RUEDA DEL RATÓN Y TECLADO
+        // ========================================================
+        window.addEventListener('wheel', (e) => {
+            if (inventoryModal.classList.contains('open')) return;
+            if (e.deltaY > 0) {
+                selectSlot(currentSelectedIndex + 1);
+            } else {
+                selectSlot(currentSelectedIndex - 1);
+            }
+        }, { passive: true });
+
+        window.addEventListener('keydown', (e) => {
+            // Si estás escribiendo en un campo del inventario, las teclas son para el texto
+            const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+
+            if (inventoryModal.classList.contains('open')) {
+                if (e.key === 'Escape' || (!typing && e.key.toLowerCase() === 'e')) {
+                    toggleInventory(false);
+                }
+                return;
+            }
+            if (typing || e.ctrlKey || e.altKey || e.metaKey) return;
+
+            // Teclas 1 a 9
+            if (e.key >= '1' && e.key <= '9') {
+                const idx = parseInt(e.key) - 1;
+                selectSlot(idx);
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                activateSlot(currentSelectedIndex);
+            } else if (e.key.toLowerCase() === 'e') {
+                toggleInventory(true);
+            }
+        });
+
+        // ========================================================
+        // MODAL DE INVENTARIO Y PERSONALIZACIÓN
+        // ========================================================
+        const editSlotSelect = document.getElementById('edit-slot-select');
+        const editNameInput = document.getElementById('edit-name-input');
+        const editTargetInput = document.getElementById('edit-target-input');
+        const itemsGrid = document.getElementById('items-grid');
+        let selectedIconForEdit = 'diamond_sword.png';
+
+        function initInventoryModal() {
+            // Poblar select de slots
+            editSlotSelect.innerHTML = '';
+            config.slots.forEach((s, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `Casilla ${idx + 1}: ${s.name}`;
+                editSlotSelect.appendChild(opt);
+            });
+
+            // Poblar cuadrícula de iconos
+            itemsGrid.innerHTML = '';
+            AVAILABLE_ICONS.forEach(iconName => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'grid-item' + (iconName === selectedIconForEdit ? ' active' : '');
+                itemDiv.innerHTML = `<img src="assets/items/${iconName}" alt="${iconName}">`;
+                itemDiv.addEventListener('click', () => {
+                    playSound('click');
+                    selectedIconForEdit = iconName;
+                    itemsGrid.querySelectorAll('.grid-item').forEach(el => el.classList.remove('active'));
+                    itemDiv.classList.add('active');
+                });
+                itemsGrid.appendChild(itemDiv);
+            });
+
+            editSlotSelect.addEventListener('change', () => {
+                loadSlotToEdit(parseInt(editSlotSelect.value));
+            });
+
+            loadSlotToEdit(0);
+        }
+
+        function loadSlotToEdit(idx) {
+            const s = config.slots[idx];
+            if (!s) return;
+            editNameInput.value = s.name;
+            editTargetInput.value = s.target;
+            selectedIconForEdit = s.icon;
+            itemsGrid.querySelectorAll('.grid-item').forEach(el => {
+                const img = el.querySelector('img');
+                if (img && img.src.includes(s.icon)) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+
+        function toggleInventory(open) {
+            if (open) {
+                playSound('toastIn');
+                initInventoryModal();
+                loadSlotToEdit(currentSelectedIndex);
+                editSlotSelect.value = currentSelectedIndex;
+                inventoryModal.classList.add('open');
+                hotbarWrapper.classList.add('active');
+            } else {
+                playSound('click');
+                inventoryModal.classList.remove('open');
+            }
+
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage({
+                    action: 'modalState',
+                    open: open
+                });
+            }
+        }
+
+        document.getElementById('btn-close-modal').addEventListener('click', () => toggleInventory(false));
+        document.getElementById('btn-cancel-modal').addEventListener('click', () => toggleInventory(false));
+
+        document.getElementById('btn-browse-target').addEventListener('click', () => {
+            playSound('click');
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage({ action: 'browseFile' });
+            }
+        });
+
+        document.getElementById('btn-save-modal').addEventListener('click', () => {
+            playSound('levelup');
+            const idx = parseInt(editSlotSelect.value);
+            if (config.slots[idx]) {
+                config.slots[idx].name = editNameInput.value.trim() || `Casilla ${idx + 1}`;
+                config.slots[idx].target = editTargetInput.value.trim();
+                config.slots[idx].icon = selectedIconForEdit;
+            }
+
+            renderHotbar();
+            toggleInventory(false);
+
+            // Notificar a C# para guardar en config.json
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage({
+                    action: 'saveConfig',
+                    config: config
+                });
+            }
+        });
+
+        // Recibir mensajes desde C# (por ejemplo, scroll global o config)
+        if (window.chrome && window.chrome.webview) {
+            window.chrome.webview.addEventListener('message', (e) => {
+                const msg = e.data;
+                if (!msg) return;
+                if (msg.action === 'stats') {
+                    applyStats(msg);
+                } else if (msg.action === 'scroll') {
+                    selectSlot(currentSelectedIndex + msg.delta);
+                } else if (msg.action === 'select') {
+                    selectSlot(msg.slot - 1);
+                } else if (msg.action === 'toggleInventory') {
+                    toggleInventory(!inventoryModal.classList.contains('open'));
+                } else if (msg.action === 'loadConfig') {
+                    config = msg.config;
+                    renderHotbar();
+                } else if (msg.action === 'fileSelected') {
+                    editTargetInput.value = msg.path;
+                    if (!editNameInput.value.trim()) {
+                        const fileName = msg.path.split(/[\\/]/).pop().replace(/\.[^/.]+$/, "");
+                        editNameInput.value = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+                    }
+                }
+            });
+        }
+
+        // ========================================================
+        // HUD: CORAZONES (RAM), COMIDA (BATERÍA O DISCO), XP (DÍA), NIVEL (CPU)
+        // Los datos llegan desde C# cada 2 segundos (mensaje 'stats')
+        // ========================================================
+        const hud = document.getElementById('hud');
+        const heartsEl = document.getElementById('hearts');
+        const foodEl = document.getElementById('food');
+        const xpBar = document.getElementById('xp');
+        const xpFill = document.getElementById('xp-fill');
+        const levelCanvas = document.getElementById('xp-level');
+        let levelMask = null;
+        let stats = null, prevRam = null, heartsLow = false, foodLow = false, infoKind = null;
+
+        const hudIcon = (kind, state) => `assets/hud/${kind}_${state}.png`;
+
+        function buildRow(el, kind) {
+            el.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const img = document.createElement('img');
+                img.className = 'hud-icon';
+                img.src = hudIcon(kind, 'full');
+                img.onload = () => scheduleRegions();
+                el.appendChild(img);
+            }
+            el.addEventListener('mouseenter', () => showInfo(kind === 'heart' ? 'hearts' : 'food'));
+            el.addEventListener('mouseleave', hideInfo);
+        }
+        buildRow(heartsEl, 'heart');
+        buildRow(foodEl, 'food');
+        xpBar.addEventListener('mouseenter', () => showInfo('xp'));
+        xpBar.addEventListener('mouseleave', hideInfo);
+        levelCanvas.addEventListener('mouseenter', () => showInfo('level'));
+        levelCanvas.addEventListener('mouseleave', hideInfo);
+
+        // halves: 0..20 medios corazones (o medios muslos)
+        function setRow(el, kind, halves) {
+            [...el.children].forEach((img, i) => {
+                const state = halves >= 2 * i + 2 ? 'full' : (halves === 2 * i + 1 ? 'half' : 'empty');
+                const src = hudIcon(kind, state);
+                if (!img.src.endsWith(src)) img.src = src;
+            });
+        }
+
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+        function applyStats(s) {
+            stats = s;
+            // Corazones: RAM libre. 100% libre = 10 corazones; cada 5% en uso quita medio corazón
+            setRow(heartsEl, 'heart', clamp(Math.round((100 - s.ram) / 5), 0, 20));
+            // "Daño": si la RAM sube 5% o más de golpe, los corazones parpadean en blanco
+            if (prevRam !== null && s.ram - prevRam >= 5) {
+                heartsEl.classList.add('flash');
+                setTimeout(() => heartsEl.classList.remove('flash'), 180);
+            }
+            prevRam = s.ram;
+
+            // Comida: batería si es laptop; si no, espacio libre del disco C:
+            const food = s.battery != null ? s.battery : s.diskFree;
+            setRow(foodEl, 'food', clamp(Math.round(food / 5), 0, 20));
+
+            // Tiemblan cuando el valor es crítico, como en el juego
+            heartsLow = s.ram >= 90;
+            foodLow = s.battery != null ? (s.battery <= 15 && !s.charging) : s.diskFree <= 10;
+
+            drawLevel(s.cpu);
+            if (infoKind) showInfo(infoKind);
+        }
+
+        // Temblor de los íconos cuando están en estado crítico
+        setInterval(() => {
+            [[heartsEl, heartsLow], [foodEl, foodLow]].forEach(([el, low]) => {
+                [...el.children].forEach(img => {
+                    const t = low ? `translateY(${(Math.floor(Math.random() * 3) - 1) * 2.5}px)` : '';
+                    if (img.style.transform !== t) img.style.transform = t;
+                });
+            });
+        }, 120);
+
+        // Barra de XP = cuánto del día ha pasado (00:00 vacía, 23:59 llena)
+        function updateXp() {
+            const d = new Date();
+            const p = (d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds()) / 86400;
+            xpFill.style.width = (p * 100).toFixed(1) + '%';
+            if (infoKind === 'xp') showInfo('xp');
+        }
+        updateXp();
+        setInterval(updateXp, 30000);
+
+        // Número verde del nivel = % de CPU, con el contorno negro del juego
+        function drawLevel(n) {
+            const text = String(n);
+            const dpr = window.devicePixelRatio || 1;
+            const ctx = levelCanvas.getContext('2d');
+            ctx.font = '20px Minecraft';
+            const w = Math.ceil(ctx.measureText(text).width) + 8, h = 26;
+            levelCanvas.style.width = w + 'px';
+            levelCanvas.style.height = h + 'px';
+            levelCanvas.width = Math.ceil(w * dpr);
+            levelCanvas.height = Math.ceil(h * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.font = '20px Minecraft';
+            ctx.textBaseline = 'bottom';
+            ctx.fillStyle = '#000';
+            for (const [dx, dy] of [[-2.5, 0], [2.5, 0], [0, -2.5], [0, 2.5]]) ctx.fillText(text, 4 + dx, h - 3 + dy);
+            ctx.fillStyle = '#80ff20';
+            ctx.fillText(text, 4, h - 3);
+            levelMask = runsFromCanvas(levelCanvas);
+            scheduleRegions();
+        }
+        document.fonts.load('20px Minecraft').then(() => drawLevel(stats ? stats.cpu : 0));
+
+        // Tooltip con los datos exactos al pasar el mouse
+        function localCenterX(el) {
+            let x = el.offsetWidth / 2, n = el;
+            while (n && n !== hotbarWrapper) { x += n.offsetLeft; n = n.offsetParent; }
+            return x;
+        }
+        function showInfo(kind) {
+            infoKind = kind;
+            clearTimeout(tooltipTimer);
+            let title = '', color = '#ffffff', lore = 'Esperando datos...', el = heartsEl;
+            const d = new Date();
+            if (kind === 'hearts') {
+                title = 'Vida · Memoria RAM'; color = '#ff5555';
+                if (stats) lore = `${stats.ramUsedGB} de ${stats.ramTotalGB} GB en uso (${stats.ram}%)`;
+            } else if (kind === 'food') {
+                el = foodEl; color = '#ffaa00';
+                if (stats && stats.battery != null) {
+                    title = 'Comida · Batería';
+                    lore = `${stats.battery}%` + (stats.charging ? ' · cargando' : '');
+                } else {
+                    title = 'Comida · Disco C:';
+                    if (stats) lore = `${stats.diskFreeGB} GB libres de ${stats.diskTotalGB} GB (${stats.diskFree}%)`;
+                }
+            } else if (kind === 'xp') {
+                el = xpBar; title = 'Experiencia · Día'; color = '#80ff20';
+                const p = Math.round((d.getHours() * 3600 + d.getMinutes() * 60) / 864);
+                lore = `${p}% del día · ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } else if (kind === 'level') {
+                el = levelCanvas; title = 'Nivel · Procesador (CPU)'; color = '#80ff20';
+                if (stats) lore = `${stats.cpu}% de uso`;
+            }
+            tooltipTitle.textContent = title;
+            tooltipTitle.style.color = color;
+            tooltipLore.textContent = lore;
+            tooltip.style.left = `${localCenterX(el)}px`;
+            tooltip.style.transform = 'translateX(-50%) translateY(0)';
+            tooltip.classList.add('show');
+            hotbarWrapper.classList.add('active');
+        }
+        function hideInfo() {
+            infoKind = null;
+            clearTimeout(tooltipTimer);
+            tooltipTimer = setTimeout(() => {
+                if (!infoKind && !inventoryModal.classList.contains('open')) {
+                    tooltip.classList.remove('show');
+                    hotbarWrapper.classList.remove('active');
+                }
+            }, 400);
+        }
+
+        // "showHud": false en config.json esconde el HUD
+        function applyHudVisibility() {
+            document.body.classList.toggle('show-numbers', config.showSlotNumbers === true);
+            const show = config.showHud !== false;
+            hud.classList.toggle('hidden', !show);
+            hotbarWrapper.classList.toggle('has-hud', show);
+        }
+        applyHudVisibility();
+
+        // ========================================================
+        // FORMA DE LA VENTANA: se le dice a C# qué partes se ven,
+        // para que solo ahí reciba clics (el resto pasa al escritorio)
+        // ========================================================
+        let lastRegions = '';
+        // Los corazones, la comida y el número del nivel tienen forma irregular:
+        // en vez de un rectángulo (que dejaría un fondo gris alrededor), se manda su silueta exacta.
+        const maskCache = new Map();
+        function runsFromCanvas(c) {
+            const w = c.width, h = c.height;
+            if (!w || !h) return null;
+            const d = c.getContext('2d').getImageData(0, 0, w, h).data;
+            const runs = [];
+            for (let y = 0; y < h; y++) {
+                let start = -1;
+                for (let x = 0; x <= w; x++) {
+                    const a = x < w ? d[(y * w + x) * 4 + 3] : 0;
+                    if (a > 20 && start < 0) start = x;
+                    else if (a <= 20 && start >= 0) { runs.push([start, y, x - start]); start = -1; }
+                }
+            }
+            return { w, h, runs };
+        }
+        function maskFromImage(img) {
+            if (!img.complete || !img.naturalWidth) return null;
+            let m = maskCache.get(img.src);
+            if (!m) {
+                const c = document.createElement('canvas');
+                c.width = img.naturalWidth; c.height = img.naturalHeight;
+                c.getContext('2d').drawImage(img, 0, 0);
+                m = runsFromCanvas(c);
+                maskCache.set(img.src, m);
+            }
+            return m;
+        }
+        function maskedRects(el, mask) {
+            if (!mask) return [];
+            const r = el.getBoundingClientRect();
+            const sx = r.width / mask.w, sy = r.height / mask.h;
+            return mask.runs.map(([x, y, len]) => ({ x: r.left + x * sx, y: r.top + y * sy, w: len * sx, h: sy }));
+        }
+
+        function reportRegions() {
+            if (!(window.chrome && window.chrome.webview)) return;
+            const PAD = 4;
+            const boxes = [document.querySelector('.hotbar-container'), selectionBox];
+            if (tooltip.classList.contains('show')) boxes.push(tooltip);
+            if (inventoryModal.classList.contains('open')) boxes.push(inventoryModal);
+            let rects = boxes.filter(Boolean).map(el => {
+                const r = el.getBoundingClientRect();
+                return { x: Math.max(0, r.left - PAD), y: Math.max(0, r.top - PAD), w: r.width + PAD * 2, h: r.height + PAD * 2 };
+            }).filter(r => r.w > PAD * 2 && r.h > PAD * 2);
+
+            if (!hud.classList.contains('hidden')) {
+                const xr = xpBar.getBoundingClientRect();
+                rects.push({ x: xr.left, y: xr.top, w: xr.width, h: xr.height });
+                document.querySelectorAll('.hud-icon').forEach(img => { rects = rects.concat(maskedRects(img, maskFromImage(img))); });
+                rects = rects.concat(maskedRects(levelCanvas, levelMask));
+            }
+
+            const key = JSON.stringify(rects.map(r => [r.x, r.y, r.w, r.h].map(v => Math.round(v * 2))));
+            if (key === lastRegions) return;
+            lastRegions = key;
+            window.chrome.webview.postMessage({ action: 'regions', dpr: window.devicePixelRatio, rects });
+        }
+        function scheduleRegions() {
+            requestAnimationFrame(reportRegions);
+            setTimeout(reportRegions, 260); // después de las animaciones (tooltip, inventario)
+        }
+        new MutationObserver(scheduleRegions).observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
+        window.addEventListener('resize', () => { lastRegions = ''; scheduleRegions(); });
+
+        // Registro de clics en hotbar.log (para diagnosticar si los clics llegan)
+        document.addEventListener('mousedown', (e) => {
+            if (window.chrome && window.chrome.webview) {
+                const t = e.target.closest('.slot, button, input, select, .grid-item');
+                window.chrome.webview.postMessage({ action: 'log', msg: 'clic en ' + (t ? (t.id || t.className || t.tagName) : e.target.tagName) });
+            }
+        });
+
+        // Cargar config.json local si está disponible
+        fetch('config.json')
+            .then(res => res.json())
+            .then(data => {
+                config = data;
+                renderHotbar();
+            })
+            .catch(() => {
+                renderHotbar();
+            });
+    </script>
+</body>
+</html>
