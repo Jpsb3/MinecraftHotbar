@@ -81,16 +81,6 @@ Permite navegar entre tus programas y juegos favoritos usando la **rueda del rat
 3. Haz doble clic en `MinecraftHotbar.exe`.
 4. ¡Listo! La barra flotará sobre tu escritorio.
 
-### Opción 2: Compilar desde el Código Fuente
-Requisitos: [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) instalado en Windows.
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/Jpsb3/MinecraftHotbar.git
-cd MinecraftHotbar
-
-# 2. Compilar con el script automatizado
-compilar.bat
 ```
 
 ---
