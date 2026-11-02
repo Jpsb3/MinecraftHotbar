@@ -812,6 +812,35 @@
 
     <script>
         // ========================================================
+        // CROSS-PLATFORM HOST BRIDGE (Windows WebView2 & Linux WebKit2GTK)
+        // ========================================================
+        if (!window.chrome || !window.chrome.webview) {
+            const _hostListeners = [];
+            window.chrome = {
+                webview: {
+                    postMessage: function(msg) {
+                        try {
+                            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.host) {
+                                window.webkit.messageHandlers.host.postMessage(typeof msg === 'string' ? msg : JSON.stringify(msg));
+                            }
+                        } catch (err) {
+                            console.error('[HostBridge] Error sending message to Linux host:', err);
+                        }
+                    },
+                    addEventListener: function(type, fn) {
+                        if (type === 'message') _hostListeners.push(fn);
+                    }
+                }
+            };
+            window.__dispatchHostMessage = function(data) {
+                const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+                _hostListeners.forEach(fn => {
+                    try { fn({ data: parsed }); } catch (e) { console.error(e); }
+                });
+            };
+        }
+
+        // ========================================================
         // REPRODUCTOR DE SONIDOS ORIGINALES MINECRAFT
         // ========================================================
         const audioFiles = {

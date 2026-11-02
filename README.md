@@ -1,110 +1,148 @@
-# 🗡️ Minecraft Desktop Hotbar & Inventory for Windows
+# 🗡️ Minecraft Desktop Hotbar & Inventory
 
-[![.NET 8.0](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![Windows 10 / 11](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?logo=windows&logoColor=white)](https://microsoft.com/windows)
+[![Descargas](https://img.shields.io/github/downloads/Jpsb3/MinecraftHotbar/total?label=Descargas&color=brightgreen)](https://github.com/Jpsb3/MinecraftHotbar/releases)
+[![Versión](https://img.shields.io/github/v/release/Jpsb3/MinecraftHotbar?label=Versi%C3%B3n)](https://github.com/Jpsb3/MinecraftHotbar/releases/latest)
+[![Windows 10 / 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows&logoColor=white)](#-descarga-e-instalaci%C3%B3n)
+[![Linux](https://img.shields.io/badge/Linux-X11%20%7C%20Wayland-FCC624?logo=linux&logoColor=black)](#-linux-support-x11--wayland)
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Python 3](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![RAM Usage](https://img.shields.io/badge/RAM-~60MB-brightgreen)]()
-[![Status](https://img.shields.io/badge/Status-Stable%20v1.0.0-success)]()
 
-Una barra de acceso rápido flotante (**Dock**) y lanzador de aplicaciones interactivo para Windows, inspirado fielmente en la **Hotbar de 9 casillas y el Inventario de Supervivencia de Minecraft Java Edition**.
+La **hotbar de 9 casillas** y el **inventario de supervivencia** de Minecraft Java Edition, convertidos en un lanzador de aplicaciones para el escritorio de Windows. Con HUD de corazones, comida y experiencia que muestran el estado real de tu PC.
 
-Permite navegar entre tus programas y juegos favoritos usando la **rueda del ratón** o los **números del 1 al 9**, con efectos de sonido originales de Minecraft (`click.ogg`, `orb.ogg`, `levelup.ogg`), tooltip con estilo oficial de lore, HUD Hardcore con monitoreo de hardware en tiempo real (RAM, CPU, Batería/Disco) y una ventana modal de **Inventario (tecla `E`)** con un **personaje 3D que sigue el cursor del ratón en tiempo real**.
+> **English:** A Minecraft-style hotbar & survival inventory app launcher for the Windows desktop. Hearts show free RAM, food shows battery (or disk), the level shows CPU usage, open apps get the enchantment glint, and you unlock achievements as you use it. Free, open source, unofficial fan project.
 
----
-
-## ✨ Características Principales
-
-* 🧱 **Estética Oficial Pixel-Perfect:** Texturas de interfaz originales de Minecraft Java (`hotbar.png`, `inventory_gui.png`, `hotbar_selection.png`) renderizadas con nitidez absoluta (`image-rendering: pixelated;`) y la tipografía auténtica *Minecraft*.
-* 👤 **Modelo de Jugador 3D con Seguimiento de Cursor:**
-  * Renderizado tridimensional acelerado por hardware con WebGL.
-  * La **cabeza y el torso del personaje siguen dinámicamente el cursor del ratón** a lo largo de toda la interfaz del inventario, exactamente como en el juego.
-  * Animación suave de respiración y reposo en los brazos.
-  * Fácilmente personalizable colocando cualquier skin estándar (`skin.png` de 64x64) en la carpeta `assets/`.
-* 🖥️ **Visibilidad Inteligente en el Escritorio (Auto-Hide):**
-  * La Hotbar se muestra de forma nativa cuando estás en el **Escritorio de Windows** o en la barra de tareas.
-  * Cuando abres o trabajas en cualquier aplicación en ventana (**Chrome, Discord, VS Code, Word, etc.**), la barra **se oculta automáticamente** para no estorbar en tu flujo de trabajo.
-  * Al minimizar a tu escritorio (<kbd>Win</kbd> + <kbd>D</kbd>) o alternar ventanas, vuelve a aparecer al instante.
-* 📊 **HUD Hardcore en Tiempo Real:**
-  * 💖 **Corazones Hardcore (RAM):** 10 corazones con indicador numérico exacto de memoria en uso (`RAM: 42% (6.8 / 16.0 GB)`). ¡Si la memoria sube de golpe, los corazones parpadean con animación de daño!
-  * 🍗 **Muslos de Comida (Batería / Disco):** Representa el porcentaje de batería en portátiles (con icono de rayo al cargar) o espacio libre en disco en PC de escritorio.
-  * 🟢 **Barra de Experiencia y Nivel (CPU):** El número de nivel verde muestra el porcentaje de uso actual de la CPU, y la barra de XP se llena progresivamente a lo largo del día.
-* 🎒 **El Inventario de Supervivencia Clásico (Tecla `E`):**
-  * Se abre en el **centro de tu pantalla** para máxima comodidad.
-  * Cuadrícula de 27 casillas + 9 casillas inferiores sincronizadas con tu Hotbar.
-  * Casillas de armadura para accesos rápidos y ranura para mano secundaria (escudo).
-  * Menú popover integrado para personalizar el nombre, la ruta (.exe, carpeta o URL) y el icono de cualquier casilla.
-  * Catálogo de recetas con decenas de ítems clásicos transparentes de alta resolución.
-* 🖱️ **Navegación Táctil y con Scroll:** Usa la rueda del ratón (`Mouse Wheel`) directamente sobre la barra para alternar entre casillas con el chasquido oficial de Minecraft (`click.ogg`).
-* ⌨️ **Atajos de Teclado (1-9 y Enter):** Presiona `1` a `9` para saltar de inmediato a cualquier ranura, y `Enter` o `Espacio` para activarla.
-* 💬 **Tooltip Flotante con Lore:** Marco violeta degradado (`#100010`) auto-ajustable con bordes inteligentes que evitan que el texto se corte en los extremos.
-* 🚀 **Rendimiento Ultraligero:**
-  * Consumo mínimo de memoria (~60 MB de RAM).
-  * **0% de uso de CPU** cuando está en reposo (las animaciones 3D se pausan completamente al cerrar el inventario).
-  * Prioridad de proceso optimizada para no afectar los FPS en juegos.
-* 🔔 **Bandeja del Sistema (System Tray):** Menú rápido junto al reloj de Windows para ocultar/mostrar la barra, abrir el inventario o salir.
+> [!NOTE]
+> Proyecto de fans, **gratuito y no oficial**. No está asociado con Mojang ni Microsoft.
 
 ---
 
-## 🎮 Controles y Atajos
+## ✨ Qué hace
 
-| Acción | Control | Descripción |
-| :--- | :--- | :--- |
-| **Cambiar casilla** | `Rueda del Ratón` o `Teclas 1 - 9` | Selecciona la casilla con sonido de clic |
-| **Abrir programa** | `Clic Izquierdo` o `Enter` | Lanza la aplicación configurada con sonido de orbe de XP |
-| **Abrir Inventario** | `Tecla E` o `Bandeja del Sistema` | Despliega el inventario centrado para personalizar casillas |
-| **Cerrar Inventario** | `Tecla Escape`, `Tecla E` o `Botón [✕]` | Cierra el inventario y guarda tu configuración |
-| **Ocultar / Mostrar Hotbar** | `Tecla Escape` (en escritorio) o `Doble clic en bandeja` | Alterna manualmente la visibilidad de la Hotbar |
+### 🎮 Hotbar
+* **9 casillas** con tus apps, juegos, carpetas o páginas web.
+* **Rueda del mouse** o **teclas 1-9** para moverte entre casillas, con el sonido del juego.
+* **Clic** (o `Enter`) para abrir la app de la casilla.
+* **Tooltip morado** con el nombre y la descripción de cada casilla.
+* **Solo aparece en el escritorio:** cuando trabajas en otra ventana o juegas en pantalla completa, se esconde sola.
+
+### ✨ Apps abiertas
+* **Brillo de encantamiento:** las casillas de las apps que tienes abiertas brillan como un ítem encantado.
+* **Número de stack:** si una app tiene varias ventanas abiertas, la casilla muestra cuántas, como una pila de ítems.
+
+### ❤️ HUD con el estado de tu PC
+| En el juego | En tu PC |
+| :--- | :--- |
+| ❤️ Corazones | RAM libre (si la RAM sube de golpe, los corazones parpadean como al recibir daño) |
+| 🍗 Comida | Batería en laptops, o espacio libre del disco en PC de escritorio |
+| 🟢 Número de nivel | Uso de CPU en % |
+| Barra de experiencia | Cuánto del día ha pasado |
+
+Pasa el mouse sobre cualquiera para ver el dato exacto.
+
+### 🎒 Inventario (tecla `E`)
+* Inventario de supervivencia con **27 casillas extra**, armadura, escudo y mesa de crafteo 2x2.
+* **Personaje 3D** que sigue tu mouse. Puedes poner tu propia skin.
+* **Mueve ítems** entre casillas como en el juego (clic para tomar, clic para soltar).
+* **Clic derecho** en una casilla para editar su nombre, ruta e ícono.
+* **Doble clic** en cualquier casilla del inventario para abrir su app.
+* **Libro de recetas** para elegir el ícono de cada casilla.
+
+### 📥 Arrastrar y soltar
+Arrastra un acceso directo, un `.exe` o una carpeta desde el escritorio hasta una casilla para asignarla al instante.
+
+### 🏆 Logros
+Avisos estilo Minecraft con sonido, por ejemplo: *¡Primer clic!*, *Rutina diaria*, *¡Diamantes!* (100 apps abiertas), *Multitarea* (5 apps a la vez), *Noctámbulo*... y alguno escondido.
 
 ---
 
-## 📦 Casillas Preconfiguradas (Por Defecto)
+## 📥 Descarga e instalación
 
-| Casilla | Ítem de Minecraft | Destino por Defecto |
-| :---: | :--- | :--- |
-| **1** | ⚔️ **Espada de Netherite** | **Juegos / Steam** (`steam:`) |
-| **2** | 💿 **Disco de Música** | **Spotify** (`spotify:`) |
-| **3** | 🔮 **Ender Pearl** | **Visual Studio Code** (`code`) |
-| **4** | 🧭 **Brújula de Navegación** | **Navegador Web** (`https://www.google.com`) |
-| **5** | 📁 **Cofre de Madera** | **Carpeta Descargas** (`shell:Downloads`) |
-| **6** | 💬 **Poción de Rapidez** | **Discord** (`discord:`) |
-| **7** | 💎 **Diamante Pulido** | **Terminal PowerShell** (`powershell.exe`) |
-| **8** | 🍎 **Manzana Dorada** | **Mis Documentos** (`shell:Personal`) |
-| **9** | ⚙️ **Mesa de Crafteo** | **Inventario & Ajustes** (`inventory`) |
+1. Ve a **[Releases](https://github.com/Jpsb3/MinecraftHotbar/releases/latest)** y descarga **`MinecraftHotbar_v1.0.0_Portable.zip`** (en *Assets*).
+   > ⚠️ No descargues "Source code": es solo el código, sin la app lista para usar.
+2. Descomprime el zip donde quieras (por ejemplo, en `Documentos`).
+3. Abre **`MinecraftHotbar.exe`**.
+
+**No necesitas instalar nada:** la versión portátil ya incluye .NET. Solo requiere Windows 10 u 11 de 64 bits con WebView2, que viene incluido en Windows actualizado.
+
+> [!NOTE]
+> Como es una app de un desarrollador independiente (sin firma digital de pago), Windows SmartScreen puede mostrar *"Windows protegió tu PC"*. Haz clic en **Más información → Ejecutar de todas formas**. El código completo está en este repositorio.
 
 ---
 
-## 🛠️ Instalación y Uso Rápido
+## 🐧 Linux Support (X11 & Wayland)
 
-### Opción 1: Versión Portátil (Recomendada)
-1. Descarga el archivo `MinecraftHotbar_v1.0.0_Portable.zip` desde la pestaña [Releases](https://github.com/Jpsb3/MinecraftHotbar/releases).
-2. Descomprime la carpeta en cualquier ubicación.
-3. Haz doble clic en `MinecraftHotbar.exe`.
-4. ¡Listo! La barra flotará sobre tu escritorio.
+A native Linux version is available in the `linux/` directory, built with **Python 3, GTK 3, and WebKit2GTK** (No Electron, ultra-lightweight ~45MB RAM).
 
-### Opción 2: Compilar desde el Código Fuente
-Requisitos: [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) instalado en Windows.
-
+### Quick Install & Run (Linux):
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/Jpsb3/MinecraftHotbar.git
-cd MinecraftHotbar
-
-# 2. Compilar con el script automatizado
-compilar.bat
+cd MinecraftHotbar/linux
+chmod +x install.sh run.sh
+./install.sh
 ```
 
+Supported on:
+* **Ubuntu / Debian / Linux Mint:** `sudo apt install python3-gi gir1.2-webkit2-4.1 gir1.2-gtk-3.0`
+* **Arch Linux / Manjaro / SteamOS:** `sudo pacman -S python-gobject webkit2gtk-4.1 gtk3`
+* **Fedora:** `sudo dnf install python3-gobject webkit2gtk4.1 gtk3`
+
+See [linux/README.md](linux/README.md) for full Linux documentation and custom configs.
+
 ---
 
-## 🎨 Cambiar tu Skin Personalizada
-Para cambiar la skin del modelo 3D por la tuya propia:
-1. Consigue tu skin de Minecraft en formato estándar PNG (64x64 píxeles).
-2. Renómbrala a `skin.png`.
-3. Pégala dentro de la carpeta `app/assets/` reemplazando la existente.
-4. Abre el inventario con <kbd>E</kbd> para ver a tu personaje con su nueva skin.
+| Acción | Cómo |
+| :--- | :--- |
+| Cambiar de casilla | Rueda del mouse sobre la barra, o teclas `1`-`9` en el escritorio |
+| Abrir la app | Clic en la casilla, o `Enter` |
+| Abrir / cerrar el inventario | `E` en el escritorio, o desde el ícono junto al reloj |
+| Editar una casilla | Clic derecho en el inventario |
+| Asignar una app rápido | Arrastra su acceso directo a una casilla |
+| Ocultar / mostrar la hotbar | `Esc` en el escritorio |
+| Menú (mostrar, inventario, salir) | Clic derecho en el ícono junto al reloj |
+
+Las teclas `E`, `1`-`9` y `Esc` solo funcionan cuando estás en el escritorio y no estás escribiendo, así que nunca interfieren con otras apps.
+
+---
+
+## 🎨 Usar tu propia skin
+1. Descarga tu skin de Minecraft en PNG (64x64).
+2. Renómbrala `skin.png`.
+3. Reemplaza el archivo `assets/skin.png`.
+4. Abre el inventario con `E`.
+
+---
+
+## ⚙️ Configuración
+
+Todo se guarda solo en `config.json` al editar desde el inventario. `config.default.json` tiene la configuración inicial. Opciones extra:
+
+* `"showHud": false` esconde los corazones, la comida y la barra de XP.
+* `"showSlotNumbers": true` muestra los números 1-9 en las casillas.
+
+---
+
+## 🛠️ Compilar desde el código
+
+Requiere el [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) en Windows.
+
+```bash
+git clone https://github.com/Jpsb3/MinecraftHotbar.git
+cd MinecraftHotbar
+compilar.bat            # compila en app/ y la abre (para probar)
+crear_release_zip.bat   # crea el zip portátil autocontenido
+```
+
+**Cómo funciona por dentro:** una ventana de C# (.NET 8, WinForms) siempre encima, sin bordes y recortada a la forma exacta de lo que se ve, con **WebView2** dibujando la interfaz en HTML/CSS/JS. C# lee la RAM, CPU, batería y disco, detecta qué apps están abiertas y escucha el teclado y la rueda del mouse en el escritorio.
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia **GNU General Public License v3.0** (GPL-3.0). Consulta el archivo [LICENSE](LICENSE) para más detalles.
-Minecraft es una marca registrada de Mojang Synergies AB. Este proyecto es una creación comunitaria sin fines comerciales.
+* El **código** de este proyecto es **GPL-3.0** (ver [LICENSE](LICENSE)): puedes usarlo, modificarlo y compartirlo, pero si distribuyes una versión modificada debe seguir siendo abierta y con crédito.
+* Las **texturas, sonidos, la fuente y el estilo visual de Minecraft** son propiedad de **Mojang Studios / Microsoft** y **no** están cubiertos por la GPL-3.0. Se usan solo en este proyecto de fans gratuito y sin fines comerciales.
+* Librerías de terceros (skinview3d, three.js) en [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+Minecraft es una marca registrada de Mojang Synergies AB. Proyecto no oficial, no aprobado ni asociado con Mojang ni Microsoft.
+
+Hecho por **[Jpsb3](https://github.com/Jpsb3)**.

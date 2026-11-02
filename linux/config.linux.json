@@ -1,0 +1,132 @@
+{
+  "hotbarScale": 2.5,
+  "opacityIdle": 0.35,
+  "opacityActive": 1,
+  "soundVolume": 0.7,
+  "autoHide": false,
+  "position": "bottom-center",
+  "offsetY": 35,
+  "slots": [
+    {
+      "slot": 1,
+      "name": "Games / Steam",
+      "lore": "Open Steam library",
+      "icon": "netherite_sword.png",
+      "target": "steam:",
+      "color": "#55ffff"
+    },
+    {
+      "slot": 2,
+      "name": "Spotify",
+      "lore": "Play music & podcasts",
+      "icon": "music_disc.png",
+      "target": "spotify:",
+      "color": "#55ff55"
+    },
+    {
+      "slot": 3,
+      "name": "Visual Studio Code",
+      "lore": "Code editor & projects",
+      "icon": "ender_pearl.png",
+      "target": "code",
+      "color": "#ff55ff"
+    },
+    {
+      "slot": 4,
+      "name": "Web Browser",
+      "lore": "Browse the web",
+      "icon": "compass.png",
+      "target": "https://www.google.com",
+      "color": "#ffff55"
+    },
+    {
+      "slot": 5,
+      "name": "Downloads",
+      "lore": "Open Downloads folder",
+      "icon": "chest.png",
+      "target": "~/Downloads",
+      "color": "#ffaa00"
+    },
+    {
+      "slot": 6,
+      "name": "Discord",
+      "lore": "Chat with friends & communities",
+      "icon": "potion.png",
+      "target": "discord:",
+      "color": "#55aaff"
+    },
+    {
+      "slot": 7,
+      "name": "Terminal",
+      "lore": "Open Linux shell",
+      "icon": "clock.png",
+      "target": "terminal",
+      "color": "#ff5555"
+    },
+    {
+      "slot": 8,
+      "name": "Documents",
+      "lore": "Personal folder & documents",
+      "icon": "golden_apple.png",
+      "target": "~/Documents",
+      "color": "#ffff55"
+    },
+    {
+      "slot": 9,
+      "name": "Inventory & Settings",
+      "lore": "Customize slots (Key E)",
+      "icon": "crafting_table.png",
+      "target": "inventory",
+      "color": "#ffaa00"
+    }
+  ],
+  "inventorySlots": [
+    {
+      "name": "Calculator",
+      "icon": "clock.png",
+      "target": "gnome-calculator",
+      "lore": "Desktop Calculator"
+    },
+    {
+      "name": "Ender Pearl",
+      "icon": "ender_pearl.png",
+      "target": "",
+      "lore": "Right click to configure"
+    },
+    {
+      "name": "Music Disc",
+      "icon": "music_disc.png",
+      "target": "",
+      "lore": "Right click to configure"
+    },
+    {
+      "name": "Chest",
+      "icon": "chest.png",
+      "target": "",
+      "lore": "Right click to configure"
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ]
+}

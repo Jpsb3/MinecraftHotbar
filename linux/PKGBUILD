@@ -1,0 +1,23 @@
+# Maintainer: Juan Pablo Bustos <https://github.com/Jpsb3>
+pkgname=minecraft-hotbar-git
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Interactive Minecraft Java HUD Dock and App Launcher for Linux (X11 & Wayland)"
+arch=('any')
+url="https://github.com/Jpsb3/MinecraftDesktopHotbar"
+license=('MIT')
+depends=('python' 'python-gobject' 'webkit2gtk-4.1' 'gtk3')
+optdepends=('gtk-layer-shell: native Wayland layer shell dock support')
+provides=('minecraft-hotbar')
+conflicts=('minecraft-hotbar')
+
+package() {
+    install -d "$pkgdir/opt/minecraft-hotbar"
+    cp -r "$srcdir"/../* "$pkgdir/opt/minecraft-hotbar/"
+
+    install -d "$pkgdir/usr/bin"
+    ln -s "/opt/minecraft-hotbar/linux/minecraft-hotbar.py" "$pkgdir/usr/bin/minecraft-hotbar"
+
+    install -Dm644 "$pkgdir/opt/minecraft-hotbar/linux/minecraft-hotbar.desktop" \
+        "$pkgdir/usr/share/applications/minecraft-hotbar.desktop"
+}

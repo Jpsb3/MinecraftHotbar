@@ -1,4 +1,4 @@
-# Archivos de compilación de .NET
+# Compilacion de .NET
 **/bin/
 **/obj/
 *.user
@@ -6,11 +6,24 @@
 *.userosscache
 *.sln.docstates
 
-# Logs y WebView2 runtime cache
+# Binarios compilados dentro de app/ (van en el Release, no en el codigo)
+app/*.dll
+app/*.exe
+app/*.pdb
+app/*.xml
+app/*.deps.json
+app/*.runtimeconfig.json
+app/runtimes/
+release_tmp/
+
+# Configuracion personal: se crea sola al usar la app (la base es config.default.json)
+app/config.json
+
+# Logs y cache de WebView2
 *.log
-hotbar.log
 **/WebView2/
 EBWebView/
 
-# Releases empaquetados
+# Releases empaquetados y respaldos locales
 *.zip
+*.respaldo*.html
