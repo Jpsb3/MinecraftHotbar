@@ -1,9 +1,14 @@
 [Desktop Entry]
-Name=Minecraft Desktop Hotbar
-Comment=Interactive Minecraft HUD Dock & Application Launcher
-Exec=/usr/bin/python3
-Icon=minecraft
-Terminal=false
 Type=Application
-Categories=Utility;DesktopSettings;Game;
+Name=Minecraft Desktop Hotbar
+Comment=La hotbar de Minecraft como lanzador de apps
+Exec=minecraft-hotbar
+Icon=minecraft-hotbar
+Terminal=false
+Categories=Utility;
 StartupNotify=false
+Actions=Inventory;
+
+[Desktop Action Inventory]
+Name=Abrir inventario
+Exec=minecraft-hotbar --inventory

@@ -3,9 +3,8 @@
 [![Descargas](https://img.shields.io/github/downloads/Jpsb3/MinecraftHotbar/total?label=Descargas&color=brightgreen)](https://github.com/Jpsb3/MinecraftHotbar/releases)
 [![Versión](https://img.shields.io/github/v/release/Jpsb3/MinecraftHotbar?label=Versi%C3%B3n)](https://github.com/Jpsb3/MinecraftHotbar/releases/latest)
 [![Windows 10 / 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows&logoColor=white)](#-descarga-e-instalaci%C3%B3n)
-[![Linux](https://img.shields.io/badge/Linux-X11%20%7C%20Wayland-FCC624?logo=linux&logoColor=black)](#-linux-support-x11--wayland)
+[![Linux beta](https://img.shields.io/badge/Linux-beta-FCC624?logo=linux&logoColor=black)](linux/README.md)
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![Python 3](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 La **hotbar de 9 casillas** y el **inventario de supervivencia** de Minecraft Java Edition, convertidos en un lanzador de aplicaciones para el escritorio de Windows. Con HUD de corazones, comida y experiencia que muestran el estado real de tu PC.
@@ -70,24 +69,17 @@ Avisos estilo Minecraft con sonido, por ejemplo: *¡Primer clic!*, *Rutina diari
 
 ---
 
-## 🐧 Linux Support (X11 & Wayland)
+## 🐧 Linux (beta)
 
-A native Linux version is available in the `linux/` directory, built with **Python 3, GTK 3, and WebKit2GTK** (No Electron, ultra-lightweight ~45MB RAM).
+También hay una versión para Linux en la carpeta [`linux/`](linux/README.md), con la misma hotbar pero en una ventana **GTK 3 + WebKit2GTK**:
 
-### Quick Install & Run (Linux):
 ```bash
 git clone https://github.com/Jpsb3/MinecraftHotbar.git
-cd MinecraftHotbar/linux
-chmod +x install.sh run.sh
-./install.sh
+cd MinecraftHotbar/linux && chmod +x install.sh && ./install.sh
+minecraft-hotbar
 ```
 
-Supported on:
-* **Ubuntu / Debian / Linux Mint:** `sudo apt install python3-gi gir1.2-webkit2-4.1 gir1.2-gtk-3.0`
-* **Arch Linux / Manjaro / SteamOS:** `sudo pacman -S python-gobject webkit2gtk-4.1 gtk3`
-* **Fedora:** `sudo dnf install python3-gobject webkit2gtk4.1 gtk3`
-
-See [linux/README.md](linux/README.md) for full Linux documentation and custom configs.
+Pensada para Ubuntu, Mint, Debian, Arch, Fedora y openSUSE (X11 y Wayland). Es beta: si algo falla en tu distro, abre un *issue*. Algunas cosas cambian respecto a Windows (por ejemplo, la tecla global se configura como atajo del sistema): ver [linux/README.md](linux/README.md).
 
 ---
 

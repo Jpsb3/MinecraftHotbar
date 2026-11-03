@@ -9,8 +9,8 @@
   "slots": [
     {
       "slot": 1,
-      "name": "Games / Steam",
-      "lore": "Open Steam library",
+      "name": "Juegos / Steam",
+      "lore": "Abrir biblioteca de juegos",
       "icon": "netherite_sword.png",
       "target": "steam:",
       "color": "#55ffff"
@@ -18,7 +18,7 @@
     {
       "slot": 2,
       "name": "Spotify",
-      "lore": "Play music & podcasts",
+      "lore": "Reproducir música y podcasts",
       "icon": "music_disc.png",
       "target": "spotify:",
       "color": "#55ff55"
@@ -26,31 +26,31 @@
     {
       "slot": 3,
       "name": "Visual Studio Code",
-      "lore": "Code editor & projects",
+      "lore": "Editor de código y proyectos",
       "icon": "ender_pearl.png",
       "target": "code",
       "color": "#ff55ff"
     },
     {
       "slot": 4,
-      "name": "Web Browser",
-      "lore": "Browse the web",
+      "name": "Navegador Web",
+      "lore": "Buscar en internet",
       "icon": "compass.png",
       "target": "https://www.google.com",
       "color": "#ffff55"
     },
     {
       "slot": 5,
-      "name": "Downloads",
-      "lore": "Open Downloads folder",
+      "name": "Descargas",
+      "lore": "Abrir carpeta Descargas",
       "icon": "chest.png",
-      "target": "~/Downloads",
+      "target": "shell:Downloads",
       "color": "#ffaa00"
     },
     {
       "slot": 6,
       "name": "Discord",
-      "lore": "Chat with friends & communities",
+      "lore": "Chat con amigos y comunidades",
       "icon": "potion.png",
       "target": "discord:",
       "color": "#55aaff"
@@ -58,52 +58,52 @@
     {
       "slot": 7,
       "name": "Terminal",
-      "lore": "Open Linux shell",
-      "icon": "clock.png",
+      "lore": "Consola de comandos",
+      "icon": "diamond.png",
       "target": "terminal",
-      "color": "#ff5555"
+      "color": "#00ffff"
     },
     {
       "slot": 8,
-      "name": "Documents",
-      "lore": "Personal folder & documents",
+      "name": "Mis Documentos",
+      "lore": "Carpeta personal y proyectos",
       "icon": "golden_apple.png",
-      "target": "~/Documents",
+      "target": "shell:Personal",
       "color": "#ffff55"
     },
     {
       "slot": 9,
-      "name": "Inventory & Settings",
-      "lore": "Customize slots (Key E)",
+      "name": "Inventario & Ajustes",
+      "lore": "Personalizar casillas (Tecla E)",
       "icon": "crafting_table.png",
       "target": "inventory",
-      "color": "#ffaa00"
+      "color": "#ff5555"
     }
   ],
   "inventorySlots": [
     {
-      "name": "Calculator",
+      "name": "Calculadora",
       "icon": "clock.png",
       "target": "gnome-calculator",
-      "lore": "Desktop Calculator"
+      "lore": "Calculadora del sistema"
     },
     {
       "name": "Ender Pearl",
       "icon": "ender_pearl.png",
       "target": "",
-      "lore": "Right click to configure"
+      "lore": "Haz clic derecho para configurar"
     },
     {
-      "name": "Music Disc",
+      "name": "Disco de Música",
       "icon": "music_disc.png",
       "target": "",
-      "lore": "Right click to configure"
+      "lore": "Haz clic derecho para configurar"
     },
     {
-      "name": "Chest",
+      "name": "Cofre",
       "icon": "chest.png",
       "target": "",
-      "lore": "Right click to configure"
+      "lore": "Haz clic derecho para configurar"
     },
     null,
     null,
@@ -128,5 +128,12 @@
     null,
     null,
     null
-  ]
+  ],
+  "stats": {
+    "opened": 0,
+    "clicks": {},
+    "unlocked": {},
+    "total": 0
+  },
+  "onlyOnDesktop": true
 }

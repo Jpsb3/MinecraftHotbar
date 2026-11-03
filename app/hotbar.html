@@ -1925,6 +1925,10 @@
             if (!group || isNaN(idx) || group === 'craftResult') return;
             if (window.chrome && window.chrome.webview && window.chrome.webview.postMessageWithAdditionalObjects) {
                 window.chrome.webview.postMessageWithAdditionalObjects({ action: 'dropFiles', group, idx }, e.dataTransfer.files);
+            } else if (window.chrome && window.chrome.webview) {
+                // Linux (WebKitGTK): la ruta llega como file:// en text/uri-list
+                const uris = (e.dataTransfer.getData('text/uri-list') || '').split(/\r?\n/).filter(u => u && !u.startsWith('#'));
+                if (uris.length) window.chrome.webview.postMessage({ action: 'dropFiles', group, idx, uris });
             }
         });
 
@@ -1950,7 +1954,7 @@
         // LOGROS: se guardan en config.json (config.progress)
         // ========================================================
         const ACHIEVEMENTS = {
-            welcome:  { kind: 'tip', title: 'Consejo', name: 'Pulsa E en el escritorio para abrir el inventario', icon: 'crafting_table.png' },
+            welcome:  { kind: 'tip', title: 'Consejo', name: window.__HOST_PLATFORM === 'linux' ? 'Haz clic en la barra y pulsa E para abrir el inventario' : 'Pulsa E en el escritorio para abrir el inventario', icon: 'crafting_table.png' },
             inv:      { name: '¡Inventario abierto!', icon: 'chest.png' },
             first:    { name: '¡Primer clic!', icon: 'ender_pearl.png' },
             ten:      { name: 'Rutina diaria (10 apps abiertas)', icon: 'clock.png' },
@@ -2111,8 +2115,8 @@
         });
 
         // Cargar config.json local si está disponible
-        fetch('config.json')
-            .then(res => res.json())
+        // En Linux el programa de Python inyecta la configuración (~/.config/minecraft-hotbar/config.json)
+        (window.__HOST_CONFIG ? Promise.resolve(window.__HOST_CONFIG) : fetch('config.json').then(res => res.json()))
             .then(data => {
                 config = data;
                 ensureConfigArrays();

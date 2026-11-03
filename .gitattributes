@@ -1,0 +1,5 @@
+# Archivos de Linux siempre con saltos de línea LF (si no, bash y python fallan)
+*.sh text eol=lf
+*.py text eol=lf
+PKGBUILD text eol=lf
+*.desktop text eol=lf

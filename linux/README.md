@@ -1,91 +1,62 @@
-# 🐧 Minecraft Desktop Hotbar for Linux
+# 🐧 Minecraft Desktop Hotbar para Linux
 
-An authentic, ultra-lightweight **Minecraft Java Edition** HUD dock and application launcher for Linux desktops (X11 & Wayland).
+La misma hotbar de Windows (mismo `hotbar.html`, texturas, sonidos, HUD, inventario 3D y logros) en una ventana nativa **GTK 3 + WebKit2GTK**. Sin Electron.
 
-Built natively with **Python 3, GTK 3, and WebKit2GTK** (No Electron!).
+> **Beta.** Si algo falla en tu distro, abre un *issue* con el nombre de la distro y del escritorio.
+>
+> **English:** Same hotbar as the Windows version, running in a native GTK 3 + WebKit2GTK window. Install with `./install.sh`, run `minecraft-hotbar`. Tested setups and limitations below.
 
----
+## Instalar
 
-## 🌟 Highlights
-
-* 🪶 **No Electron:** Native GTK3 + WebKit2GTK container consuming only **~45 MB RAM** and **0% CPU** at idle.
-* 🖥️ **X11 & Wayland Support:** True RGBA transparency, floating dock mode (`_NET_WM_WINDOW_TYPE_DOCK`) and native Wayland Layer Shell support (`gtk-layer-shell`).
-* 📦 **Interactive 3D Player & Custom Skins:** Real-time 3D Minecraft character in the inventory inspecting your cursor.
-* 🔊 **Authentic Sounds:** Original sound effects (`click.ogg`, `orb.ogg`, `levelup.ogg`, etc.).
-* 📊 **Real-time Linux System Monitoring:**
-  * **Hearts (HP):** Real RAM consumption parsed directly from `/proc/meminfo`.
-  * **Food Bar:** Battery level or Root filesystem disk usage.
-  * **Level Number:** Real-time CPU utilization parsed from `/proc/stat`.
-* ⚡ **App Launching:** Native support for `.desktop` apps, Steam games (`steam:`), Spotify, VS Code, terminals, and custom shell scripts.
-
----
-
-## 🚀 Quick Start & Installation
-
-### Option 1: Automatic Installer
-Clone the repository and run the setup script:
 ```bash
-git clone https://github.com/Jpsb3/MinecraftDesktopHotbar.git
-cd MinecraftDesktopHotbar/linux
-chmod +x install.sh run.sh
+git clone https://github.com/Jpsb3/MinecraftHotbar.git
+cd MinecraftHotbar/linux
+chmod +x install.sh
 ./install.sh
 ```
 
----
+El instalador detecta tu distro (Ubuntu/Debian/Mint, Arch/Manjaro, Fedora, openSUSE), instala las dependencias y crea:
+* el comando `minecraft-hotbar`
+* el acceso en el menú de aplicaciones
+* (opcional) el inicio automático al entrar a la sesión
 
-### Option 2: Manual Installation by Distribution
+En Arch también puedes usar el `PKGBUILD` de esta carpeta (`makepkg -si`).
 
-#### **Ubuntu / Debian / Linux Mint / Pop!_OS**
-```bash
-sudo apt update
-sudo apt install -y python3 python3-gi python3-gi-cairo gir1.2-webkit2-4.1 gir1.2-gtk-3.0
-```
+## Uso
 
-#### **Arch Linux / Manjaro / EndeavourOS / SteamOS**
-```bash
-sudo pacman -S --needed python python-gobject webkit2gtk-4.1 gtk3
-# Optional for Wayland compositors (Hyprland / Sway):
-sudo pacman -S gtk-layer-shell
-```
+| Acción | Cómo |
+| :--- | :--- |
+| Abrir la hotbar | `minecraft-hotbar` o desde el menú de apps |
+| Mostrar / ocultar | `Esc` oculta · ícono junto al reloj o volver a ejecutar `minecraft-hotbar` la muestra |
+| Abrir el inventario | Clic en la hotbar y tecla `E`, la casilla 9, o `minecraft-hotbar --inventory` |
+| Cambiar de casilla | Rueda del mouse sobre la barra, o teclas `1`-`9` después de hacer clic en ella |
+| Menú (mostrar, inventario, editar config, reiniciar, salir) | Ícono junto al reloj |
+| Cerrar | Ícono junto al reloj → Salir, o `minecraft-hotbar --quit` |
 
-#### **Fedora / RHEL**
-```bash
-sudo dnf install -y python3 python3-gobject webkit2gtk4.1 gtk3
-```
+**Tecla global:** Linux no deja que una app escuche el teclado de todo el sistema, así que crea un atajo en la configuración de tu escritorio (por ejemplo `Super+E`) que ejecute `minecraft-hotbar --inventory`.
 
-#### **openSUSE**
-```bash
-sudo zypper install -y python3-gobject typelib-1_0-WebKit2-4_1 gtk3
-```
+## Diferencias con Windows
 
----
+| | X11 (Ubuntu con Xorg, Mint, XFCE, KDE X11...) | Wayland con layer-shell (KDE Plasma 6, Hyprland, Sway) | GNOME en Wayland |
+| :--- | :--- | :--- | :--- |
+| Se oculta cuando usas otra ventana | ✅ | ❌ siempre visible | ✅ (usa XWayland) |
+| Brillo de apps abiertas | ✅ | ✅ | ✅ |
+| Número de ventanas por app | ✅ | ❌ solo el brillo | ⚠️ solo apps X11 |
 
-## 🎮 Running the Hotbar
+* Para que el fondo sea transparente necesitas un escritorio con efectos/compositor (todos los modernos lo tienen). Sin compositor la barra se recorta igual, pero sin bordes suaves.
+* Rutas de casillas: comandos (`code`, `gnome-calculator`), archivos `.desktop`, carpetas (`~/Proyectos`), enlaces (`https://`, `steam:`, `spotify:`), `terminal` y `shell:Downloads` / `shell:Personal` (Descargas / Documentos).
+* Puedes arrastrar apps y carpetas desde tu gestor de archivos a una casilla.
 
-From the project root directory:
-```bash
-python3 linux/minecraft-hotbar.py
-```
-Or simply:
-```bash
-./linux/run.sh
-```
+## Configuración
 
----
+Se guarda en `~/.config/minecraft-hotbar/config.json` (con copia `config.backup.json`). Opción extra de Linux:
 
-## ⌨️ Controls & Keybindings
+* `"onlyOnDesktop": false` hace que la hotbar quede siempre visible.
 
-* **Mouse Wheel:** Scroll to switch active hotbar slots with authentic click sound.
-* **Keys 1 to 9:** Jump directly to any hotbar slot.
-* **Key E:** Open the **Survival Inventory & Settings modal** to customize your slots, items, and shortcuts.
-* **Key ESC:** Close the inventory modal or minimize the hotbar.
+## Dependencias
 
----
+Python 3, PyGObject (+ cairo), GTK 3, WebKit2GTK 4.1 (o 4.0), GStreamer (sonidos). Opcionales: `libwnck3` (X11), `gtk-layer-shell` (Wayland) y `libayatana-appindicator` (ícono junto al reloj; en GNOME requiere la extensión AppIndicator, que Ubuntu ya trae).
 
-## ⚙️ Configuration
+## Licencia
 
-Custom shortcuts and settings are saved at:
-```bash
-~/.config/minecraft-hotbar/config.json
-```
-You can edit it directly or use the in-game GUI by pressing <kbd>E</kbd> or clicking slot 9.
+GPL-3.0, igual que el resto del proyecto. Las texturas, sonidos y fuente de Minecraft son de Mojang Studios / Microsoft. Proyecto de fans no oficial.

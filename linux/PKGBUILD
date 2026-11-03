@@ -1,23 +1,38 @@
-# Maintainer: Juan Pablo Bustos <https://github.com/Jpsb3>
+# Maintainer: Jpsb3 <https://github.com/Jpsb3>
 pkgname=minecraft-hotbar-git
 pkgver=1.0.0
 pkgrel=1
-pkgdesc="Interactive Minecraft Java HUD Dock and App Launcher for Linux (X11 & Wayland)"
+pkgdesc="La hotbar e inventario de Minecraft Java como lanzador de apps (X11 y Wayland)"
 arch=('any')
-url="https://github.com/Jpsb3/MinecraftDesktopHotbar"
-license=('MIT')
-depends=('python' 'python-gobject' 'webkit2gtk-4.1' 'gtk3')
-optdepends=('gtk-layer-shell: native Wayland layer shell dock support')
+url="https://github.com/Jpsb3/MinecraftHotbar"
+license=('GPL-3.0-only')
+depends=('python' 'python-gobject' 'python-cairo' 'gtk3' 'webkit2gtk-4.1' 'gst-plugins-good' 'gst-plugins-base')
+optdepends=('libwnck3: ocultarse fuera del escritorio y contar ventanas en X11'
+            'gtk-layer-shell: dock nativo en Wayland (KDE, Hyprland, Sway)'
+            'libayatana-appindicator: ícono junto al reloj')
+makedepends=('git')
 provides=('minecraft-hotbar')
 conflicts=('minecraft-hotbar')
+source=("$pkgname::git+https://github.com/Jpsb3/MinecraftHotbar.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "$pkgname"
+    printf "1.0.0.r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
 
 package() {
+    cd "$pkgname"
     install -d "$pkgdir/opt/minecraft-hotbar"
-    cp -r "$srcdir"/../* "$pkgdir/opt/minecraft-hotbar/"
+    cp -r app linux LICENSE THIRD_PARTY_NOTICES.md "$pkgdir/opt/minecraft-hotbar/"
+    # Archivos solo de Windows
+    rm -f "$pkgdir"/opt/minecraft-hotbar/app/*.{dll,exe,pdb,xml} "$pkgdir"/opt/minecraft-hotbar/app/*.json.bak
+    rm -rf "$pkgdir/opt/minecraft-hotbar/app/runtimes"
+    chmod 755 "$pkgdir/opt/minecraft-hotbar/linux/minecraft-hotbar.py"
 
     install -d "$pkgdir/usr/bin"
-    ln -s "/opt/minecraft-hotbar/linux/minecraft-hotbar.py" "$pkgdir/usr/bin/minecraft-hotbar"
-
-    install -Dm644 "$pkgdir/opt/minecraft-hotbar/linux/minecraft-hotbar.desktop" \
-        "$pkgdir/usr/share/applications/minecraft-hotbar.desktop"
+    ln -s /opt/minecraft-hotbar/linux/minecraft-hotbar.py "$pkgdir/usr/bin/minecraft-hotbar"
+    install -Dm644 linux/minecraft-hotbar.desktop "$pkgdir/usr/share/applications/minecraft-hotbar.desktop"
+    install -Dm644 app/assets/items/crafting_table.png "$pkgdir/usr/share/icons/hicolor/32x32/apps/minecraft-hotbar.png"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
